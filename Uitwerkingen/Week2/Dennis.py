@@ -85,3 +85,13 @@ def draw_mandel_heatmap(width):
     plt.show()
 
 draw_mandel_heatmap(200)
+
+
+# Opdracht 3
+k = 5 # number of nodes around 1 'hub'. Dennis
+di = # number of page ranks number i already has. Dennis
+pi = # probability that page k+i links to page i. Dennis
+M = 4 # already existing different pages of the star network. Dennis
+N = 400 # number of web pages. Dennis
+
+
