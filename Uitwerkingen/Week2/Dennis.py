@@ -88,9 +88,9 @@ draw_mandel_heatmap(200)
 
 
 # Opdracht 3.1: parameters
-k = 5 # aantal nodes rond 1 middelpunt. Dennis
-di = [2, 1, 1, 3, 2] # aantal pagina-ranks die nummer i bezit. Dennis
-sum_di = sum(di) # som van alle pagina-ranks. Dennis
+k = 5 # aantal knopen rond 1 middelpunt. Dennis
+di = [2, 1, 1, 3, 2] # aantal pagina-links dat nummer i bezit. Dennis
+sum_di = sum(di) # som van het aantal pagina-links. Dennis
 pi = # waarschijnlijkheid dat pagina k+i linkt met punt i. Dennis
 M = 4 # al bestaande, verschillende pagina's van het sternetwerk. Dennis
 N = 400 # aantal webpagina's. Dennis
