@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Documentatie Exercise 1 - Student Grades</title>
+    <style>
+        :root {
+            --blue: #1f4e79;
+            --light-blue: #eaf3f8;
+            --text: #263238;
+            --border: #cbd5dc;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f7f9;
+            color: var(--text);
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        
+        }
+
+        main {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 24px 40px;
+        }
+
+        header {
+            background: var(--blue);
+            color: white;
+            padding: 28px 32px;
+            border-radius: 8px;
+        }
+
+        section {
+            background: white;
+            margin-top: 20px;
+            padding: 24px 28px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        h1, h2 {
+            margin-top: 0;
+        }
+
+        h2 {
+            color: var(--blue);
+        }
+
+        code, pre {
+            font-family: Consolas, monospace;
+        }
+
+        pre {
+            overflow-x: auto;
+            background: #202b33;
+            color: #f4f7f9;
+            padding: 16px;
+            border-radius: 5px;
+        }
+
+        .note {
+            background: var(--light-blue);
+            border-left: 4px solid var(--blue);
+            padding: 12px 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--light-blue);
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header>
+            <h1>Exercise 1: Student Grades</h1>
+            <p>Documentatie van het inlezen en analyseren van studentencijfers.</p>
+        </header>
+
+        <section>
+            <h2>Doel van de oefening</h2>
+            <p>
+                Het programma leest studentgegevens uit een CSV-bestand. Daarna
+                berekent het programma het gemiddelde cijfer en maakt het een
+                rapport van studenten met een cijfer van minimaal 80.
+            </p>
+        </section>
+
+        <section>
+            <h2>Benodigde import</h2>
+            <p>De Python-module <code>csv</code> is nodig om het bestand te lezen.</p>
+            <pre><code>import csv</code></pre>
+            <p class="note">
+                Voeg deze regel toe voordat <code>csv.DictReader</code> wordt gebruikt.
+            </p>
+        </section>
+
+        <section>
+            <h2>Invoerbestand</h2>
+            <p>
+                De gebruiker voert het pad naar een CSV-bestand in. Het bestand
+                moet ten minste de kolommen <code>Name</code> en <code>Grade</code> bevatten.
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Alice</td>
+                        <td>90</td>
+                    </tr>
+                    <tr>
+                        <td>Bob</td>
+                        <td>75</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Werking van het programma</h2>
+            <ol>
+                <li>De gebruiker geeft het pad naar het CSV-bestand op.</li>
+                <li>Het bestand wordt geopend met <code>open</code>.</li>
+                <li><code>csv.DictReader</code> leest elke rij als een dictionary.</li>
+                <li>De dictionaries worden opgeslagen in de lijst <code>records</code>.</li>
+                <li>De cijfers worden opgeteld en gedeeld door het aantal studenten.</li>
+                <li>Alle studenten met een cijfer van minimaal 80 worden geselecteerd.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Belangrijkste code</h2>
+            <pre><code>file_path = input("Enter the path to the CSV file: ")
+records = []
+
+with open(file_path, 'r') as file:
+    csv_reader = csv.DictReader(file)
+    for row in csv_reader:
+        records.append(row)
+
+total = sum(float(record['Grade']) for record in records)
+average = total / len(records)
+
+filtered_records = [
+    record for record in records
+    if float(record['Grade']) &gt;= 80.0
+]</code></pre>
+        </section>
+
+        <section>
+            <h2>Uitvoer</h2>
+            <p>Het programma toont eerst het gemiddelde cijfer en daarna de geselecteerde studenten.</p>
+            <pre><code>Average Grade: 82.5
+--------------------
+Student Report
+--------------
+Name: Alice
+Grade: 90
+--------------------</code></pre>
+        </section>
+
+        <section>
+            <h2>Mogelijke fouten</h2>
+            <ul>
+                <li>Het opgegeven bestandspad bestaat niet.</li>
+                <li>Het CSV-bestand bevat geen kolom met de naam <code>Grade</code>.</li>
+                <li>Een cijfer kan niet worden omgezet naar een getal.</li>
+                <li>Een leeg CSV-bestand veroorzaakt een fout bij het berekenen van het gemiddelde.</li>
+            </ul>
+        </section>
+    </main>
+</body>
+</html>
