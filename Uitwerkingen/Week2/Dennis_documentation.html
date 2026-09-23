@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barabasi-Albert netwerk</title>
+    <style>
+        :root {
+            --ink: #17202a;
+            --muted: #64748b;
+            --paper: #f5f1e8;
+            --panel: #fffdf8;
+            --line: #d9d0c1;
+            --accent: #d4512f;
+            --accent-dark: #9e321d;
+            --blue: #176b87;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--ink);
+            background: radial-gradient(circle at 12% 8%, #fff9df 0, transparent 35%), var(--paper);
+            font-family: Georgia, "Times New Roman", serif;
+        }
+
+        main { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 42px 0; }
+
+        header { max-width: 760px; margin-bottom: 28px; }
+        .eyebrow { color: var(--accent-dark); font: 700 0.78rem/1.2 Arial, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
+        h1 { margin: 8px 0 10px; font-size: clamp(2.4rem, 6vw, 5.2rem); line-height: 0.95; font-weight: 500; }
+        header p { margin: 0; color: var(--muted); font: 1rem/1.6 Arial, sans-serif; }
+
+        .workspace { display: grid; grid-template-columns: 250px 1fr; gap: 18px; align-items: stretch; }
+        .panel, .graph-panel { background: color-mix(in srgb, var(--panel) 91%, transparent); border: 1px solid var(--line); box-shadow: 0 12px 35px #7c604018; }
+        .panel { padding: 20px; }
+        .panel h2 { margin: 0 0 18px; font-size: 1.35rem; font-weight: 500; }
+        label { display: block; margin: 15px 0 6px; font: 700 0.75rem/1.2 Arial, sans-serif; letter-spacing: 0.06em; text-transform: uppercase; }
+        input { width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 2px; background: #fff; color: var(--ink); font: 1rem Georgia, serif; }
+        input:focus { outline: 3px solid #d4512f33; border-color: var(--accent); }
+        button { width: 100%; margin-top: 20px; padding: 13px 15px; border: 0; border-radius: 2px; background: var(--accent); color: #fff; cursor: pointer; font: 700 0.82rem Arial, sans-serif; letter-spacing: 0.05em; text-transform: uppercase; }
+        button:hover { background: var(--accent-dark); }
+        #message { min-height: 42px; margin: 14px 0 0; color: var(--accent-dark); font: 0.88rem/1.4 Arial, sans-serif; }
+
+        .graph-panel { min-width: 0; padding: 14px; }
+        .graph-heading { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; padding: 4px 8px 14px; }
+        .graph-heading h2 { margin: 0; font-size: 1.3rem; font-weight: 500; }
+        #summary { color: var(--muted); font: 0.82rem Arial, sans-serif; text-align: right; }
+        svg { display: block; width: 100%; height: min(68vh, 650px); min-height: 360px; background: #f8f5ee; border: 1px solid var(--line); }
+        .edge { stroke: #a8a095; stroke-width: 1.2; opacity: 0.58; }
+        .node { fill: var(--blue); stroke: #fffdf8; stroke-width: 2; }
+        .center-node { fill: var(--accent); }
+        .node-label { fill: var(--ink); font: 11px Arial, sans-serif; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
+
+        @media (max-width: 760px) {
+            main { width: min(100% - 20px, 620px); padding: 28px 0; }
+            .workspace { grid-template-columns: 1fr; }
+            .panel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: end; }
+            .panel h2, #message, button { grid-column: 1 / -1; }
+            label { margin: 0 0 5px; }
+            button { margin-top: 8px; }
+            svg { min-height: 320px; }
+            .graph-heading { display: block; }
+            #summary { margin-top: 6px; text-align: left; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header>
+            <div class="eyebrow">Exercise 3.1</div>
+            <h1>Barabasi-Albert netwerk</h1>
+            <p>Een groeiend netwerk waarin nieuwe webpagina's vooral verbinding maken met pagina's die al veel links hebben.</p>
+        </header>
+
+        <section class="workspace" aria-label="Netwerkgenerator">
+            <form class="panel" id="network-form">
+                <h2>Parameters</h2>
+                <div>
+                    <label for="nodes">N: webpagina's</label>
+                    <input id="nodes" type="number" value="20" min="2" max="120" step="1">
+                </div>
+                <div>
+                    <label for="leaves">k: startknopen</label>
+                    <input id="leaves" type="number" value="4" min="1" max="119" step="1">
+                </div>
+                <div>
+                    <label for="links">M: nieuwe links</label>
+                    <input id="links" type="number" value="2" min="1" max="119" step="1">
+                </div>
+                <button type="submit">Genereer netwerk</button>
+                <p id="message" role="status"></p>
+            </form>
+
+            <section class="graph-panel" aria-labelledby="graph-title">
+                <div class="graph-heading">
+                    <h2 id="graph-title">Netwerkweergave</h2>
+                    <div id="summary"></div>
+                </div>
+                <svg id="network" viewBox="0 0 900 620" role="img" aria-label="Visualisatie van het netwerk"></svg>
+            </section>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById("network-form");
+        const svg = document.getElementById("network");
+        const message = document.getElementById("message");
+        const summary = document.getElementById("summary");
+        const svgNamespace = "http://www.w3.org/2000/svg";
+
+        function readParameters() {
+            const N = Number(document.getElementById("nodes").value);
+            const k = Number(document.getElementById("leaves").value);
+            const M = Number(document.getElementById("links").value);
+
+            if (![N, k, M].every(Number.isInteger)) {
+                throw new Error("Gebruik gehele getallen voor N, k en M.");
+            }
+            if (N < 2 || N > 120) {
+                throw new Error("N moet tussen 2 en 120 liggen.");
+            }
+            if (k < 1 || k >= N) {
+                throw new Error("k moet minimaal 1 zijn en kleiner dan N.");
+            }
+            if (M < 1 || M > k + 1) {
+                throw new Error("M moet minimaal 1 zijn en maximaal k + 1 zijn.");
+            }
+            return { N, k, M };
+        }
+
+        function weightedChoice(nodes, weights) {
+            const totalWeight = weights.reduce((total, weight) => total + weight, 0);
+            let target = Math.random() * totalWeight;
+            for (let index = 0; index < nodes.length; index += 1) {
+                target -= weights[index];
+                if (target <= 0) return nodes[index];
+            }
+            return nodes[nodes.length - 1];
+        }
+
+        function barbasiAlbert(N, k, M) {
+            const nodes = Array.from({ length: k + 1 }, (_, index) => index);
+            const edges = [];
+            const degrees = new Map(nodes.map((node) => [node, 0]));
+
+            for (let leaf = 1; leaf <= k; leaf += 1) {
+                edges.push([0, leaf]);
+                degrees.set(0, degrees.get(0) + 1);
+                degrees.set(leaf, degrees.get(leaf) + 1);
+            }
+
+            for (let node = k + 1; node < N; node += 1) {
+                const available = [...nodes];
+                const targets = [];
+                while (targets.length < M) {
+                    const weights = available.map((candidate) => degrees.get(candidate));
+                    const target = weightedChoice(available, weights);
+                    targets.push(target);
+                    available.splice(available.indexOf(target), 1);
+                }
+                nodes.push(node);
+                degrees.set(node, 0);
+                targets.forEach((target) => {
+                    edges.push([node, target]);
+                    degrees.set(node, degrees.get(node) + 1);
+                    degrees.set(target, degrees.get(target) + 1);
+                });
+            }
+            return { nodes, edges };
+        }
+
+        function drawNetwork(graph) {
+            const width = 900;
+            const height = 620;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) * 0.39;
+            const positions = new Map();
+            const angleStep = (Math.PI * 2) / graph.nodes.length;
+
+            graph.nodes.forEach((node, index) => {
+                const angle = index * angleStep - Math.PI / 2;
+                positions.set(node, { x: centerX + radius * Math.cos(angle), y: centerY + radius * Math.sin(angle) });
+            });
+
+            svg.replaceChildren();
+            graph.edges.forEach(([from, to]) => {
+                const start = positions.get(from);
+                const end = positions.get(to);
+                const line = document.createElementNS(svgNamespace, "line");
+                line.setAttribute("x1", start.x);
+                line.setAttribute("y1", start.y);
+                line.setAttribute("x2", end.x);
+                line.setAttribute("y2", end.y);
+                line.setAttribute("class", "edge");
+                svg.appendChild(line);
+            });
+
+            graph.nodes.forEach((node) => {
+                const position = positions.get(node);
+                const circle = document.createElementNS(svgNamespace, "circle");
+                circle.setAttribute("cx", position.x);
+                circle.setAttribute("cy", position.y);
+                circle.setAttribute("r", node === 0 ? 13 : 9);
+                circle.setAttribute("class", node === 0 ? "node center-node" : "node");
+                svg.appendChild(circle);
+
+                const label = document.createElementNS(svgNamespace, "text");
+                label.setAttribute("x", position.x);
+                label.setAttribute("y", position.y);
+                label.setAttribute("class", "node-label");
+                label.textContent = node;
+                svg.appendChild(label);
+            });
+        }
+
+        function generateNetwork() {
+            try {
+                const { N, k, M } = readParameters();
+                const graph = barbasiAlbert(N, k, M);
+                drawNetwork(graph);
+                summary.textContent = `${graph.nodes.length} knopen | ${graph.edges.length} verbindingen`;
+                message.textContent = "Netwerk succesvol gegenereerd.";
+            } catch (error) {
+                message.textContent = error.message;
+            }
+        }
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            generateNetwork();
+        });
+
+        generateNetwork();
+    </script>
+</body>
+</html>
