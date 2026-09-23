@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentatie: Oefening 1 - Cijferverwerking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .section {
+            background: #fff;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        code {
+            background-color: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: Consolas, monospace;
+        }
+        pre {
+            background-color: #272822;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .author {
+            font-weight: bold;
+            color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Code Documentatie: Oefening 1</h1>
+    <p>Deze documentatie beschrijft het Python-script voor het inlezen, berekenen en filteren van studentencijfers uit een CSV-bestand.</p>
+
+    <div class="section">
+        <h2>1. CSV Inlezen & Datastructuur</h2>
+        <p><span class="author">Auteur: Bas</span></p>
+        <ul>
+            <li> Vraagt de gebruiker om het pad naar het CSV-bestand.</li>
+            <li>Maakt een lege lijst <code>records</code> aan.</li>
+            <li>Opent het bestand veilig met <code>with open()</code>.</li>
+            <li>Leest de data in als dictionaries met <code>csv.DictReader</code> en voegt elke rij toe aan de lijst.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>2. Gemiddelde Berekenen</h2>
+        <p><span class="author">Auteur: Bas & Dennis</span></p>
+        <ul>
+            <li><strong>Totaal berekenen:</strong> Telt alle cijfers uit de kolom <code>Grade</code> op met de <code>sum()</code> functie en zet ze om naar <code>float</code>.</li>
+            <li><strong>Gemiddelde:</strong> Deelt het totaal door het aantal studenten (<code>len(records)</code>).</li>
+            <li><strong>Output:</strong> Print het gemiddelde cijfer op het scherm.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>3. Filteren & Rapportage</h2>
+        <p><span class="author">Auteur: Dennis</span></p>
+        <ul>
+            <li>Filtert de studenten die een cijfer van <strong>80.0 of hoger</strong> hebben gehaald met een list comprehension.</li>
+            <li>Print een overzichtelijk rapport ("Student Report") met de namen en cijfers van de gefilterde studenten.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Volledige Broncode</h2>
+        <pre><code>import csv
+
+# 1. Bestand inlezen
+file_path = input("Enter the path to the CSV file: ")
+records = []
+
+with open(file_path, 'r') as file:
+    csv_reader = csv.DictReader(file)
+    for row in csv_reader:
+        records.append(row)
+
+# 2. Gemiddelde berekenen
+total = sum(float(record['Grade']) for record in records)
+average = total / len(records)
+
+print(f"Average Grade: {average}")
+print("--------------------")
+
+# 3. Filteren en rapport afdrukken (Cijfer >= 80.0)
+filtered_records = [record for record in records if float(record['Grade']) >= 80.0]
+
+print("Student Report")
+print("--------------")
+
+for record in filtered_records:
+    print(f"Name: {record['Name']}")
+    print(f"Grade: {record['Grade']}")
+    print("--------------------")</code></pre>
+    </div>
+
+    <div class="section">
+        <h2>Vereisten aan het CSV-bestand</h2>
+        <p>Het CSV-bestand moet minstens de volgende kolomnamen bevatten:</p>
+        <ul>
+            <li><code>Name</code>: De naam van de student.</li>
+            <li><code>Grade</code>: Het behaalde cijfer (numerieke waarde).</li>
+        </ul>
+    </div>
+
+</body>
+</html>
