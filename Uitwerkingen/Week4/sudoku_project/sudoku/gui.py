@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from sudoku.board import SudokuBoard
@@ -11,7 +12,7 @@ class SudokuGUI:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("Python 9x9 Sudoku")
-        self.root.geometry("450 x 550")
+        self.root.geometry("450x550")  # Geen spaties rond de 'x'
         self.root.resizable(False, False)
 
         # Standaard voorbeeldpuzzel

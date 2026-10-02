@@ -1,0 +1,8 @@
+# PowerShell Commando's voor het starten van de Sudoku App
+# Kopieer en plak de onderstaande regels in Windows PowerShell:
+
+cd "C:\Users\baswe\Documents\GitHub\ds5_assigment_group1\Uitwerkingen\Week4\sudoku_project"
+python examples/example_gui.py
+
+Pas de eerste regel naar eigen gebruik aan, dus naar waar de map staat.
+2e regel blijft hetzelfde.
