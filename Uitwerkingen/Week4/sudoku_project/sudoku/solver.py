@@ -4,7 +4,7 @@ class SudokuSolver:
     def __init__(self, board):
         self.board = board
 
-    def solve((self) -> bool:
+    def solve(self) -> bool:
         """Lost het Sudoku-bord op met een backtracking algoritme."""
         empty_cell = self._find_empty()
         if not empty_cell:
