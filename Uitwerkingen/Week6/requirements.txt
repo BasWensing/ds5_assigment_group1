@@ -1,0 +1,7 @@
+requirements
+# Benodigde libraries importeren 3.1
+%pip install langdetect
+
+from langdetect import detect
+from langdetect.lang_detect_exception import LangDetectException
+from langdetect.lang_detect_exception import LangDetectException
